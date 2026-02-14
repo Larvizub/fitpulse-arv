@@ -128,6 +128,13 @@ label {
   color: #fff;
 }
 
+.google-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
 .fit-landing-shell {
   min-height: 100vh;
   padding: 2rem;

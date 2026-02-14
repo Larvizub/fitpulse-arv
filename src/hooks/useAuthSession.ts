@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { User } from 'firebase/auth'
-import { loginWithEmail, logoutSession, registerWithEmail, watchAuthState } from '../services/authService'
+import { loginWithEmail, loginWithGoogle, logoutSession, registerWithEmail, watchAuthState } from '../services/authService'
 
 export interface AuthSessionState {
   currentUser: User | null
@@ -83,6 +83,15 @@ export function useAuthSession() {
     },
     async logout() {
       await logoutSession()
+    },
+    async loginGoogle() {
+      setState((prev) => ({ ...prev, errorMessage: '' }))
+
+      try {
+        await loginWithGoogle()
+      } catch (error) {
+        setState((prev) => ({ ...prev, errorMessage: (error as Error).message }))
+      }
     },
   }
 

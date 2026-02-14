@@ -51,6 +51,7 @@ function App() {
         onPasswordChange={authSession.setPassword}
         onRegisterNameChange={authSession.setRegisterName}
         onRegisterGoalChange={authSession.setRegisterGoal}
+        onGoogleLogin={authSession.loginGoogle}
         onToggleMode={authSession.toggleMode}
         onSubmit={authSession.handleSubmit}
       />

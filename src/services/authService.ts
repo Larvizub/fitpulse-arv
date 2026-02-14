@@ -1,11 +1,13 @@
 import {
+  GoogleAuthProvider,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithPopup,
   signInWithEmailAndPassword,
   signOut,
   type User,
 } from 'firebase/auth'
-import { ref, set } from 'firebase/database'
+import { get, ref, set } from 'firebase/database'
 import { auth, db } from '../firebase'
 import type { UserProfile } from '../types'
 
@@ -20,6 +22,8 @@ export interface LoginInput {
   email: string
   password: string
 }
+
+const googleProvider = new GoogleAuthProvider()
 
 export function watchAuthState(callback: (user: User | null) => void) {
   if (!auth) {
@@ -58,6 +62,34 @@ export async function loginWithEmail(input: LoginInput) {
   }
 
   await signInWithEmailAndPassword(auth, input.email, input.password)
+}
+
+export async function loginWithGoogle() {
+  if (!auth || !db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  const credential = await signInWithPopup(auth, googleProvider)
+  const user = credential.user
+
+  const profileRef = ref(db, `users/${user.uid}/profile`)
+  const existingProfile = await get(profileRef)
+
+  if (!existingProfile.exists()) {
+    const profileData: UserProfile = {
+      uid: user.uid,
+      fullName: user.displayName ?? 'Gym Member',
+      email: user.email ?? '',
+      phone: '',
+      age: 20,
+      heightCm: 170,
+      trainingPhase: 'adaptacion',
+      goal: '',
+      createdAt: new Date().toISOString(),
+    }
+
+    await set(profileRef, profileData)
+  }
 }
 
 export async function logoutSession() {
