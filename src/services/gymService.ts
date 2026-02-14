@@ -1,5 +1,5 @@
 import { onValue, push, ref, set, update } from 'firebase/database'
-import { db } from '../firebase'
+import { db } from './backendClient'
 import type { Measurement, ProgressEntry, Routine, RoutineExercise, UserProfile } from '../types'
 
 export interface UserSubscriptions {

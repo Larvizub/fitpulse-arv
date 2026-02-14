@@ -6,7 +6,7 @@ import {
   type User,
 } from 'firebase/auth'
 import { ref, set } from 'firebase/database'
-import { auth, db } from '../firebase'
+import { auth, db } from './backendClient'
 import type { UserProfile } from '../types'
 
 export interface RegisterInput {

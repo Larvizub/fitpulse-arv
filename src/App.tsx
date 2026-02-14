@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { User } from 'firebase/auth'
-import { firebaseEnabled } from './firebase'
+import { firebaseEnabled } from './services/backendClient'
 import { AppHeader } from './components/AppHeader'
 import { AppSidebar } from './components/AppSidebar'
 import { AuthLanding } from './components/AuthLanding'
