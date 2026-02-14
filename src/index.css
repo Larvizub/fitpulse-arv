@@ -638,6 +638,20 @@ label {
   color: var(--muted);
 }
 
+.save-feedback {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.save-feedback.success {
+  color: var(--primary);
+}
+
+.save-feedback.error-state {
+  color: #fca5a5;
+}
+
 .error {
   color: #fca5a5;
   font-size: 0.85rem;

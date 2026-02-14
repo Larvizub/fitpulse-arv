@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react'
+import { useState } from 'react'
 import type { TranslationKey } from '../../i18n/translations'
 import type { TrainingPhase } from '../../types'
 
@@ -20,6 +21,18 @@ interface PerfilSectionProps {
 }
 
 export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, parseNumber, t }: PerfilSectionProps) {
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    setSaveStatus('saving')
+    try {
+      await onSaveProfile(event)
+      setSaveStatus('saved')
+    } catch {
+      setSaveStatus('error')
+    }
+  }
+
   return (
     <section className="fit-content-stack">
       <article className="glass-card panel-large">
@@ -27,7 +40,7 @@ export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, pa
           <h2>{t('perfil.title')}</h2>
           <span>{t('perfil.step')}</span>
         </div>
-        <form onSubmit={onSaveProfile} className="neon-form two">
+        <form onSubmit={handleSubmit} className="neon-form two">
           <label>
             {t('perfil.fullName')}
             <input value={profileDraft.fullName} onChange={(event) => onChangeProfile({ ...profileDraft, fullName: event.target.value })} required />
@@ -75,8 +88,10 @@ export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, pa
             <textarea value={profileDraft.goal} onChange={(event) => onChangeProfile({ ...profileDraft, goal: event.target.value })} />
           </label>
           <button className="fit-btn fit-btn-primary full" type="submit">
-            {t('perfil.save')}
+            {saveStatus === 'saving' ? t('perfil.saving') : t('perfil.save')}
           </button>
+          {saveStatus === 'saved' ? <p className="save-feedback success">{t('perfil.saved')}</p> : null}
+          {saveStatus === 'error' ? <p className="save-feedback error-state">{t('perfil.saveError')}</p> : null}
         </form>
       </article>
     </section>

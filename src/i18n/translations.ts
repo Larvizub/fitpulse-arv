@@ -62,6 +62,9 @@ export const translations = {
       trainingPhase: 'Fase de entrenamiento',
       primaryGoal: 'Objetivo principal',
       save: 'Guardar inscripción',
+      saving: 'Guardando...',
+      saved: 'Inscripción guardada correctamente',
+      saveError: 'No se pudo guardar la inscripción',
     },
     medidas: {
       title: 'Métricas de salud',
@@ -181,6 +184,9 @@ export const translations = {
       trainingPhase: 'Training phase',
       primaryGoal: 'Primary goal',
       save: 'Save enrollment',
+      saving: 'Saving...',
+      saved: 'Enrollment saved successfully',
+      saveError: 'Could not save enrollment',
     },
     medidas: {
       title: 'Health metrics',
@@ -293,6 +299,9 @@ export type TranslationKey =
   | 'perfil.trainingPhase'
   | 'perfil.primaryGoal'
   | 'perfil.save'
+  | 'perfil.saving'
+  | 'perfil.saved'
+  | 'perfil.saveError'
   | 'medidas.title'
   | 'medidas.history'
   | 'medidas.entries'
