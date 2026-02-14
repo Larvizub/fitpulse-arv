@@ -22,7 +22,7 @@ export const translations = {
       realtime: 'Tiempo real',
     },
     auth: {
-      chip: 'Nueva sede abierta',
+      chip: 'Versión preliminar',
       titleTop: 'TRANSFORMA TU CUERPO',
       titleBottom: 'DOMINA TU MENTE',
       subtitle: 'Plataforma integral para inscripción, métricas de salud, rutinas interactivas y seguimiento completo del progreso en gimnasio.',
@@ -154,7 +154,7 @@ export const translations = {
       realtime: 'Realtime',
     },
     auth: {
-      chip: 'New facility open',
+      chip: 'Beta version',
       titleTop: 'TRANSFORM YOUR BODY',
       titleBottom: 'MASTER YOUR MIND',
       subtitle: 'All-in-one platform for enrollment, health metrics, interactive routines, and full gym progress tracking.',
