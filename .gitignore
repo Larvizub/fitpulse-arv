@@ -36,8 +36,6 @@ firebase-debug.log
 firebase-debug.*.log
 *firebase*adminsdk*.json
 *serviceAccount*.json
-src/firebase.ts
-src/firebase.*
 
 # Archivos de instrucciones internas/no públicas
 .github/instructions/
