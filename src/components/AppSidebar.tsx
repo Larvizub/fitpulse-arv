@@ -12,6 +12,8 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ activeTab, userName, email, t, onChangeTab, onLogout }: AppSidebarProps) {
+  const avatarLetter = userName.trim().charAt(0).toUpperCase() || 'F'
+
   return (
     <aside className="fit-sidebar">
       <div className="fit-brand">
@@ -35,9 +37,18 @@ export function AppSidebar({ activeTab, userName, email, t, onChangeTab, onLogou
         ))}
       </nav>
 
-      <div className="fit-user-box">
-        <p>{userName}</p>
-        <small>{email}</small>
+      <div className="fit-sidebar-bottom">
+        <button className="fit-btn fit-btn-soft fit-settings-btn" type="button" onClick={() => onChangeTab('perfil')}>
+          <span className="material-symbols-outlined">settings</span>
+          <span>Settings</span>
+        </button>
+        <div className="fit-user-box">
+          <div className="fit-avatar">{avatarLetter}</div>
+          <div>
+            <p>{userName}</p>
+            <small>{email}</small>
+          </div>
+        </div>
         <button className="fit-btn fit-btn-soft" onClick={onLogout} type="button">
           {t('common.logout')}
         </button>

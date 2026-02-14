@@ -1,15 +1,16 @@
 import { onValue, push, ref, set, update } from 'firebase/database'
 import { db } from '../firebase'
-import type { Measurement, ProgressEntry, Routine, RoutineExercise, UserProfile } from '../types'
+import type { Measurement, ProgressEntry, Routine, RoutineExercise, UserProfile, WeeklyPlanItem } from '../types'
 
 export interface UserSubscriptions {
   profile: (value: UserProfile | null) => void
   measurements: (value: Measurement[]) => void
   routines: (value: Routine[]) => void
   progressEntries: (value: ProgressEntry[]) => void
+  weeklyPlan: (value: WeeklyPlanItem[]) => void
 }
 
-function mapList<T>(value: T | Record<string, T> | null | undefined): T[] {
+function mapList<T>(value: T | T[] | Record<string, T> | null | undefined): T[] {
   if (!value) {
     return []
   }
@@ -27,6 +28,7 @@ export function subscribeToUserData(uid: string, subscriptions: UserSubscription
     subscriptions.measurements([])
     subscriptions.routines([])
     subscriptions.progressEntries([])
+    subscriptions.weeklyPlan([])
     return () => undefined
   }
 
@@ -34,6 +36,7 @@ export function subscribeToUserData(uid: string, subscriptions: UserSubscription
   const measurementsRef = ref(db, `users/${uid}/measurements`)
   const routinesRef = ref(db, `users/${uid}/routines`)
   const progressRef = ref(db, `users/${uid}/progress`)
+  const weeklyPlanRef = ref(db, `users/${uid}/weeklyPlan`)
 
   const unsubProfile = onValue(profileRef, (snapshot) => {
     subscriptions.profile(snapshot.val() as UserProfile | null)
@@ -57,11 +60,17 @@ export function subscribeToUserData(uid: string, subscriptions: UserSubscription
     subscriptions.progressEntries(list)
   })
 
+  const unsubWeeklyPlan = onValue(weeklyPlanRef, (snapshot) => {
+    const value = snapshot.val() as Record<string, WeeklyPlanItem> | WeeklyPlanItem[] | null
+    subscriptions.weeklyPlan(mapList(value))
+  })
+
   return () => {
     unsubProfile()
     unsubMeasurements()
     unsubRoutines()
     unsubProgress()
+    unsubWeeklyPlan()
   }
 }
 
@@ -84,6 +93,30 @@ export async function addMeasurement(uid: string, payload: Omit<Measurement, 'id
     ...payload,
     date: new Date().toISOString(),
   } satisfies Measurement)
+}
+
+export async function clearMeasurementsHistory(uid: string) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await set(ref(db, `users/${uid}/measurements`), null)
+}
+
+export async function updateMeasurement(uid: string, measurementId: string, payload: Partial<Measurement>) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await update(ref(db, `users/${uid}/measurements/${measurementId}`), payload)
+}
+
+export async function deleteMeasurement(uid: string, measurementId: string) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await set(ref(db, `users/${uid}/measurements/${measurementId}`), null)
 }
 
 export async function addRoutine(uid: string, payload: Omit<Routine, 'id' | 'date'>) {
@@ -128,4 +161,28 @@ export async function addProgressEntry(uid: string, payload: Omit<ProgressEntry,
     ...payload,
     date: new Date().toISOString(),
   } satisfies ProgressEntry)
+}
+
+export async function deleteProgressEntry(uid: string, progressEntryId: string) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await set(ref(db, `users/${uid}/progress/${progressEntryId}`), null)
+}
+
+export async function clearProgressEntries(uid: string) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await set(ref(db, `users/${uid}/progress`), null)
+}
+
+export async function saveWeeklyPlan(uid: string, weeklyPlan: WeeklyPlanItem[]) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await set(ref(db, `users/${uid}/weeklyPlan`), weeklyPlan)
 }

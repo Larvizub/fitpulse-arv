@@ -20,7 +20,13 @@ export function AppHeader({ activeTab, trainingPhase, language, t, onChangeLangu
           {t('common.activePhase')}: {trainingPhase} • {t('common.memberDashboard')}
         </p>
       </div>
-      <div className="lang-switch" role="group" aria-label="Language switch">
+      <div className="header-actions-wrap">
+        <div className="header-view-actions" role="group" aria-label="Dashboard actions">
+          <button className="fit-btn fit-btn-soft" type="button">Dashboard</button>
+          <button className="fit-btn fit-btn-soft" type="button">Reports</button>
+          <button className="fit-btn fit-btn-soft" type="button">Export</button>
+        </div>
+        <div className="lang-switch" role="group" aria-label="Language switch">
         <button
           className={language === 'es' ? 'fit-btn fit-btn-soft active-lang' : 'fit-btn fit-btn-soft'}
           type="button"
@@ -35,6 +41,7 @@ export function AppHeader({ activeTab, trainingPhase, language, t, onChangeLangu
         >
           {t('common.english')}
         </button>
+        </div>
       </div>
     </header>
   )

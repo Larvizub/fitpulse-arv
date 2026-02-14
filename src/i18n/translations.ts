@@ -65,6 +65,11 @@ export const translations = {
       saving: 'Guardando...',
       saved: 'Inscripción guardada correctamente',
       saveError: 'No se pudo guardar la inscripción',
+      savedTitle: 'Información guardada',
+      savedHint: 'Tus datos ya están guardados. Puedes editar cuando lo necesites.',
+      edit: 'Editar inscripción',
+      cancelEdit: 'Cancelar edición',
+      saveChanges: 'Guardar cambios',
     },
     medidas: {
       title: 'Métricas de salud',
@@ -77,6 +82,11 @@ export const translations = {
       arm: 'Brazo (cm)',
       save: 'Guardar medición',
       waistShort: 'cintura',
+      clearHistory: 'Borrar historial',
+      clearing: 'Borrando...',
+      clearConfirm: '¿Seguro que deseas borrar todo el historial de métricas?',
+      cleared: 'Historial borrado correctamente',
+      clearError: 'No se pudo borrar el historial',
     },
     ejercicios: {
       title: 'Recomendaciones por fase',
@@ -187,6 +197,11 @@ export const translations = {
       saving: 'Saving...',
       saved: 'Enrollment saved successfully',
       saveError: 'Could not save enrollment',
+      savedTitle: 'Saved information',
+      savedHint: 'Your data is saved. You can edit it whenever you need.',
+      edit: 'Edit enrollment',
+      cancelEdit: 'Cancel editing',
+      saveChanges: 'Save changes',
     },
     medidas: {
       title: 'Health metrics',
@@ -199,6 +214,11 @@ export const translations = {
       arm: 'Arm (cm)',
       save: 'Save measurement',
       waistShort: 'waist',
+      clearHistory: 'Clear history',
+      clearing: 'Clearing...',
+      clearConfirm: 'Are you sure you want to delete the entire metrics history?',
+      cleared: 'History cleared successfully',
+      clearError: 'Could not clear history',
     },
     ejercicios: {
       title: 'Phase recommendations',
@@ -302,6 +322,11 @@ export type TranslationKey =
   | 'perfil.saving'
   | 'perfil.saved'
   | 'perfil.saveError'
+  | 'perfil.savedTitle'
+  | 'perfil.savedHint'
+  | 'perfil.edit'
+  | 'perfil.cancelEdit'
+  | 'perfil.saveChanges'
   | 'medidas.title'
   | 'medidas.history'
   | 'medidas.entries'
@@ -312,6 +337,11 @@ export type TranslationKey =
   | 'medidas.arm'
   | 'medidas.save'
   | 'medidas.waistShort'
+  | 'medidas.clearHistory'
+  | 'medidas.clearing'
+  | 'medidas.clearConfirm'
+  | 'medidas.cleared'
+  | 'medidas.clearError'
   | 'ejercicios.title'
   | 'ejercicios.weekly'
   | 'ejercicios.range'

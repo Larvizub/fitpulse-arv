@@ -13,6 +13,8 @@ interface ProgresoSectionProps {
   progressEntries: ProgressEntry[]
   onSetProgressDraft: (next: ProgressDraft) => void
   onAddProgress: (event: FormEvent<HTMLFormElement>) => void
+  onDeleteProgress: (progressEntryId: string) => Promise<void>
+  onClearProgress: () => Promise<void>
   parseNumber: (value: string) => number
   t: (key: TranslationKey) => string
 }
@@ -22,9 +24,29 @@ export function ProgresoSection({
   progressEntries,
   onSetProgressDraft,
   onAddProgress,
+  onDeleteProgress,
+  onClearProgress,
   parseNumber,
   t,
 }: ProgresoSectionProps) {
+  async function handleDeleteProgress(progressEntryId: string) {
+    const confirmed = window.confirm('¿Deseas borrar este registro de progreso?')
+    if (!confirmed) {
+      return
+    }
+
+    await onDeleteProgress(progressEntryId)
+  }
+
+  async function handleClearProgress() {
+    const confirmed = window.confirm('¿Deseas borrar todo el progreso registrado?')
+    if (!confirmed) {
+      return
+    }
+
+    await onClearProgress()
+  }
+
   return (
     <section className="fit-split-grid">
       <article className="glass-card">
@@ -69,6 +91,9 @@ export function ProgresoSection({
           <h2>{t('progreso.timeline')}</h2>
           <span>{progressEntries.length} {t('progreso.logs')}</span>
         </div>
+        <button className="fit-btn fit-btn-soft" type="button" onClick={handleClearProgress}>
+          Borrar todo
+        </button>
         <ul className="fit-list">
           {progressEntries.map((entry) => (
             <li key={entry.id}>
@@ -76,6 +101,11 @@ export function ProgresoSection({
               <span>
                 {t('progreso.moodLabel')}: {entry.mood} • {t('progreso.energyLabel')}: {entry.energyLevel}/10 • {entry.notes || t('progreso.noNotes')}
               </span>
+              <div className="history-actions">
+                <button className="fit-btn fit-btn-soft" type="button" onClick={() => handleDeleteProgress(entry.id)}>
+                  Borrar
+                </button>
+              </div>
             </li>
           ))}
         </ul>

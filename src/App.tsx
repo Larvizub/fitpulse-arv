@@ -4,12 +4,12 @@ import { firebaseEnabled } from './firebase'
 import { AppHeader } from './components/AppHeader'
 import { AppSidebar } from './components/AppSidebar'
 import { AuthLanding } from './components/AuthLanding'
-import { EjerciciosSection } from './components/sections/EjerciciosSection'
-import { MedidasSection } from './components/sections/MedidasSection'
-import { PerfilSection } from './components/sections/PerfilSection'
-import { ProgresoSection } from './components/sections/ProgresoSection'
-import { ResumenSection } from './components/sections/ResumenSection'
-import { RutinasSection } from './components/sections/RutinasSection'
+import { EjerciciosSection } from './components/sections/EjerciciosSection.tsx'
+import { MedidasSection } from './components/sections/MedidasSection.tsx'
+import { PerfilSection } from './components/sections/PerfilSection.tsx'
+import { ProgresoSection } from './components/sections/ProgresoSection.tsx'
+import { ResumenSection } from './components/sections/ResumenSection.tsx'
+import { RutinasSection } from './components/sections/RutinasSection.tsx'
 import { useAuthSession } from './hooks/useAuthSession'
 import { useGymData } from './hooks/useGymData'
 import { useLanguage } from './hooks/useLanguage'
@@ -113,6 +113,8 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
             completionRate={gymData.completionRate}
             routineCount={gymData.routines.length}
             measurementCount={gymData.measurements.length}
+            routines={gymData.routines}
+            progressEntries={gymData.progressEntries}
             profile={gymData.profile}
             t={t}
           />
@@ -121,6 +123,7 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
         {activeTab === 'perfil' ? (
           <PerfilSection
             profileDraft={gymData.profileDraft}
+            hasSavedProfile={Boolean(gymData.profile)}
             onSaveProfile={gymData.onSaveProfile}
             onChangeProfile={gymData.setProfileDraft}
             parseNumber={gymData.parseNumber}
@@ -134,6 +137,9 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
             measurements={gymData.measurements}
             onChangeMeasurementDraft={gymData.setMeasurementDraft}
             onAddMeasurement={gymData.onAddMeasurement}
+            onClearHistory={gymData.onClearMeasurementsHistory}
+            onUpdateMeasurement={gymData.onUpdateMeasurement}
+            onDeleteMeasurement={gymData.onDeleteMeasurement}
             parseNumber={gymData.parseNumber}
             t={t}
           />
@@ -143,6 +149,10 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
           <EjerciciosSection
             phase={phaseLabel}
             recommended={gymData.recommended}
+            weeklyPlan={gymData.weeklyPlan}
+            routineOptions={gymData.routines.map((routine) => routine.name)}
+            onUpdateWeeklyPlanItem={gymData.onUpdateWeeklyPlanItem}
+            onSaveQuickWorkout={gymData.onSaveQuickWorkout}
             t={t}
           />
         ) : null}
@@ -174,6 +184,8 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
             progressEntries={gymData.progressEntries}
             onSetProgressDraft={gymData.setProgressDraft}
             onAddProgress={gymData.onAddProgress}
+            onDeleteProgress={gymData.onDeleteProgress}
+            onClearProgress={gymData.onClearProgress}
             parseNumber={gymData.parseNumber}
             t={t}
           />

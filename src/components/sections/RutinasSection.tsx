@@ -39,14 +39,28 @@ export function RutinasSection({
   parseNumber,
   t,
 }: RutinasSectionProps) {
+  const focusRoutine = activeRoutine
+  const focusExercise = focusRoutine?.exercises[0]
+
   return (
-    <section className="fit-tracker-layout">
-      <article className="glass-card queue-panel">
+    <section className="fit-live-layout">
+      <article className="glass-card queue-panel live-sidebar">
         <div className="panel-head">
           <h2>{t('rutinas.queue')}</h2>
           <span>{routines.length} {t('rutinas.routines')}</span>
         </div>
-        <form onSubmit={onSaveRoutine} className="neon-form">
+
+        <ul className="fit-list live-queue-list">
+          {routines.map((routine) => (
+            <li key={routine.id} className={focusRoutine?.id === routine.id ? 'active' : ''}>
+              <strong>{routine.name}</strong>
+              <span>{routine.exercises.length} {t('rutinas.exercise')}</span>
+            </li>
+          ))}
+          {!routines.length ? <li><span className="muted">{t('rutinas.createRoutineHint')}</span></li> : null}
+        </ul>
+
+        <form onSubmit={onSaveRoutine} className="neon-form live-form-compact">
           <label>
             {t('rutinas.routineName')}
             <input value={routineName} onChange={(event) => onSetRoutineName(event.target.value)} required />
@@ -82,29 +96,36 @@ export function RutinasSection({
         </form>
       </article>
 
-      <article className="glass-card panel-large">
-        <div className="panel-head">
-          <h2>{t('rutinas.tracker')}</h2>
-          <span>{t('rutinas.sessionLive')}</span>
-        </div>
-        {activeRoutine ? (
-          <div className="set-table">
+      <article className="glass-card panel-large live-main-card">
+        <header className="live-main-header">
+          <div>
+            <h2>{focusExercise?.name || t('rutinas.tracker')}</h2>
+            <p>{focusRoutine?.name || t('rutinas.sessionLive')}</p>
+          </div>
+          <div className="live-header-actions">
+            <button className="fit-btn fit-btn-soft" type="button">Settings</button>
+            <button className="fit-btn fit-btn-soft" type="button">End Workout</button>
+          </div>
+        </header>
+
+        {focusRoutine ? (
+          <div className="set-table live-set-table">
             <div className="set-row head">
               <span>{t('rutinas.exercise')}</span>
               <span>{t('rutinas.target')}</span>
               <span>{t('rutinas.completed')}</span>
               <span>{t('rutinas.actions')}</span>
             </div>
-            {activeRoutine.exercises.map((exercise) => (
-              <div className="set-row" key={exercise.id}>
+            {focusRoutine.exercises.map((exercise, index) => (
+              <div className={index === 0 ? 'set-row active-row' : 'set-row'} key={exercise.id}>
                 <strong>{exercise.name}</strong>
                 <span>{exercise.targetReps}</span>
                 <span>{exercise.completedReps}</span>
                 <div className="set-actions">
-                  <button type="button" onClick={() => onUpdateExerciseReps(activeRoutine, exercise, -1)}>
+                  <button type="button" onClick={() => onUpdateExerciseReps(focusRoutine, exercise, -1)}>
                     -
                   </button>
-                  <button type="button" onClick={() => onUpdateExerciseReps(activeRoutine, exercise, 1)}>
+                  <button type="button" onClick={() => onUpdateExerciseReps(focusRoutine, exercise, 1)}>
                     +
                   </button>
                 </div>

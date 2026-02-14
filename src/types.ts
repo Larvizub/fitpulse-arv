@@ -44,3 +44,10 @@ export interface ProgressEntry {
   energyLevel: number
   notes: string
 }
+
+export interface WeeklyPlanItem {
+  day: string
+  exerciseName: string
+  durationMin: number
+  isRestDay: boolean
+}
