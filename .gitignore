@@ -30,8 +30,6 @@ dist-ssr
 
 # Firebase (credenciales, configuración local y artefactos)
 .firebase/
-.firebaserc
-firebase.json
 firebase-debug.log
 firebase-debug.*.log
 *firebase*adminsdk*.json

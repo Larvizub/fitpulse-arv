@@ -36,6 +36,21 @@ pnpm lint
 pnpm build
 ```
 
+## Deploy a Firebase Hosting
+
+1. Edita `.firebaserc` y reemplaza `TU_PROJECT_ID_FIREBASE` por tu project id real.
+2. Inicia sesión en Firebase CLI:
+
+```bash
+pnpm firebase:login
+```
+
+3. Publica hosting:
+
+```bash
+pnpm deploy:hosting
+```
+
 ## Estructura de datos esperada (Realtime Database)
 
 ```text
