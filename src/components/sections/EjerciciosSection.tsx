@@ -1,14 +1,17 @@
+import type { TranslationKey } from '../../i18n/translations'
+
 interface EjerciciosSectionProps {
   phase: string
   recommended: string[]
+  t: (key: TranslationKey) => string
 }
 
-export function EjerciciosSection({ phase, recommended }: EjerciciosSectionProps) {
+export function EjerciciosSection({ phase, recommended, t }: EjerciciosSectionProps) {
   return (
     <section className="fit-split-grid">
       <article className="glass-card">
         <div className="panel-head">
-          <h2>Phase Recommendations</h2>
+          <h2>{t('ejercicios.title')}</h2>
           <span>{phase}</span>
         </div>
         <ul className="recommend-list">
@@ -17,7 +20,9 @@ export function EjerciciosSection({ phase, recommended }: EjerciciosSectionProps
               <div className="recommend-index">{index + 1}</div>
               <div>
                 <h4>{exercise}</h4>
-                <p>Intensity: {index < 2 ? 'High' : index === 2 ? 'Medium' : 'Low'} • 45-75 min</p>
+                <p>
+                  {t('ejercicios.intensity')}: {index < 2 ? t('ejercicios.high') : index === 2 ? t('ejercicios.medium') : t('ejercicios.low')} • 45-75 min
+                </p>
               </div>
             </li>
           ))}
@@ -26,8 +31,8 @@ export function EjerciciosSection({ phase, recommended }: EjerciciosSectionProps
 
       <article className="glass-card panel-large">
         <div className="panel-head">
-          <h2>Weekly Schedule</h2>
-          <span>Oct 23 - Oct 29</span>
+          <h2>{t('ejercicios.weekly')}</h2>
+          <span>{t('ejercicios.range')}</span>
         </div>
         <div className="week-grid">
           {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (

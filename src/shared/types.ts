@@ -2,6 +2,5 @@ export type TabKey = 'resumen' | 'perfil' | 'medidas' | 'ejercicios' | 'rutinas'
 
 export interface TabMeta {
   key: TabKey
-  label: string
   icon: string
 }

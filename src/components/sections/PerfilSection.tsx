@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react'
+import type { TranslationKey } from '../../i18n/translations'
 import type { TrainingPhase } from '../../types'
 
 interface ProfileDraft {
@@ -15,27 +16,28 @@ interface PerfilSectionProps {
   onSaveProfile: (event: FormEvent<HTMLFormElement>) => void
   onChangeProfile: (next: ProfileDraft) => void
   parseNumber: (value: string) => number
+  t: (key: TranslationKey) => string
 }
 
-export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, parseNumber }: PerfilSectionProps) {
+export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, parseNumber, t }: PerfilSectionProps) {
   return (
     <section className="fit-content-stack">
       <article className="glass-card panel-large">
         <div className="panel-head">
-          <h2>Enrollment Form</h2>
-          <span>Step 1 of 3</span>
+          <h2>{t('perfil.title')}</h2>
+          <span>{t('perfil.step')}</span>
         </div>
         <form onSubmit={onSaveProfile} className="neon-form two">
           <label>
-            Full Name
+            {t('perfil.fullName')}
             <input value={profileDraft.fullName} onChange={(event) => onChangeProfile({ ...profileDraft, fullName: event.target.value })} required />
           </label>
           <label>
-            Phone
+            {t('perfil.phone')}
             <input value={profileDraft.phone} onChange={(event) => onChangeProfile({ ...profileDraft, phone: event.target.value })} />
           </label>
           <label>
-            Age
+            {t('perfil.age')}
             <input
               type="number"
               min={12}
@@ -46,7 +48,7 @@ export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, pa
             />
           </label>
           <label>
-            Height (cm)
+            {t('perfil.height')}
             <input
               type="number"
               min={100}
@@ -57,7 +59,7 @@ export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, pa
             />
           </label>
           <label>
-            Training Phase
+            {t('perfil.trainingPhase')}
             <select
               value={profileDraft.trainingPhase}
               onChange={(event) => onChangeProfile({ ...profileDraft, trainingPhase: event.target.value as TrainingPhase })}
@@ -69,11 +71,11 @@ export function PerfilSection({ profileDraft, onSaveProfile, onChangeProfile, pa
             </select>
           </label>
           <label className="full">
-            Primary Goal
+            {t('perfil.primaryGoal')}
             <textarea value={profileDraft.goal} onChange={(event) => onChangeProfile({ ...profileDraft, goal: event.target.value })} />
           </label>
           <button className="fit-btn fit-btn-primary full" type="submit">
-            Save Enrollment Data
+            {t('perfil.save')}
           </button>
         </form>
       </article>

@@ -1,15 +1,17 @@
 import { TAB_META } from '../constants/gym'
 import type { TabKey } from '../shared/types'
+import type { TranslationKey } from '../i18n/translations'
 
 interface AppSidebarProps {
   activeTab: TabKey
   userName: string
   email: string
+  t: (key: TranslationKey) => string
   onChangeTab: (tab: TabKey) => void
   onLogout: () => void
 }
 
-export function AppSidebar({ activeTab, userName, email, onChangeTab, onLogout }: AppSidebarProps) {
+export function AppSidebar({ activeTab, userName, email, t, onChangeTab, onLogout }: AppSidebarProps) {
   return (
     <aside className="fit-sidebar">
       <div className="fit-brand">
@@ -28,7 +30,7 @@ export function AppSidebar({ activeTab, userName, email, onChangeTab, onLogout }
             type="button"
           >
             <span className="material-symbols-outlined">{tab.icon}</span>
-            <span>{tab.label}</span>
+            <span>{t(`tab.${tab.key}` as TranslationKey)}</span>
           </button>
         ))}
       </nav>
@@ -37,7 +39,7 @@ export function AppSidebar({ activeTab, userName, email, onChangeTab, onLogout }
         <p>{userName}</p>
         <small>{email}</small>
         <button className="fit-btn fit-btn-soft" onClick={onLogout} type="button">
-          Cerrar sesión
+          {t('common.logout')}
         </button>
       </div>
     </aside>

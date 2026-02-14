@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react'
+import type { TranslationKey } from '../../i18n/translations'
 
 interface MeasurementDraft {
   weightKg: number
@@ -22,6 +23,7 @@ interface MedidasSectionProps {
   onChangeMeasurementDraft: (next: MeasurementDraft) => void
   onAddMeasurement: (event: FormEvent<HTMLFormElement>) => void
   parseNumber: (value: string) => number
+  t: (key: TranslationKey) => string
 }
 
 export function MedidasSection({
@@ -30,17 +32,18 @@ export function MedidasSection({
   onChangeMeasurementDraft,
   onAddMeasurement,
   parseNumber,
+  t,
 }: MedidasSectionProps) {
   return (
     <section className="fit-split-grid">
       <article className="glass-card">
         <div className="panel-head">
-          <h2>Health Metrics</h2>
-          <span>Realtime</span>
+          <h2>{t('medidas.title')}</h2>
+          <span>{t('common.realtime')}</span>
         </div>
         <form onSubmit={onAddMeasurement} className="neon-form">
           <label>
-            Weight (kg)
+            {t('medidas.weight')}
             <input
               type="number"
               value={measurementDraft.weightKg}
@@ -48,7 +51,7 @@ export function MedidasSection({
             />
           </label>
           <label>
-            Body Fat (%)
+            {t('medidas.bodyFat')}
             <input
               type="number"
               value={measurementDraft.bodyFatPercent}
@@ -58,7 +61,7 @@ export function MedidasSection({
             />
           </label>
           <label>
-            Waist (cm)
+            {t('medidas.waist')}
             <input
               type="number"
               value={measurementDraft.waistCm}
@@ -66,7 +69,7 @@ export function MedidasSection({
             />
           </label>
           <label>
-            Chest (cm)
+            {t('medidas.chest')}
             <input
               type="number"
               value={measurementDraft.chestCm}
@@ -74,7 +77,7 @@ export function MedidasSection({
             />
           </label>
           <label>
-            Arm (cm)
+            {t('medidas.arm')}
             <input
               type="number"
               value={measurementDraft.armCm}
@@ -82,22 +85,22 @@ export function MedidasSection({
             />
           </label>
           <button className="fit-btn fit-btn-primary" type="submit">
-            Save Measurement
+            {t('medidas.save')}
           </button>
         </form>
       </article>
 
       <article className="glass-card">
         <div className="panel-head">
-          <h2>History</h2>
-          <span>{measurements.length} entries</span>
+          <h2>{t('medidas.history')}</h2>
+          <span>{measurements.length} {t('medidas.entries')}</span>
         </div>
         <ul className="fit-list">
           {measurements.map((item) => (
             <li key={item.id}>
               <strong>{new Date(item.date).toLocaleDateString()}</strong>
               <span>
-                {item.weightKg}kg • {item.bodyFatPercent}% grasa • cintura {item.waistCm}cm
+                {item.weightKg}kg • {item.bodyFatPercent}% • {t('medidas.waistShort')} {item.waistCm}cm
               </span>
             </li>
           ))}

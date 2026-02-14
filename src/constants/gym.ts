@@ -2,12 +2,12 @@ import type { TrainingPhase } from '../types'
 import type { TabMeta } from '../shared/types'
 
 export const TAB_META: TabMeta[] = [
-  { key: 'resumen', label: 'Dashboard', icon: 'dashboard' },
-  { key: 'perfil', label: 'Enrollment', icon: 'person_add' },
-  { key: 'medidas', label: 'Health Metrics', icon: 'monitor_weight' },
-  { key: 'ejercicios', label: 'Recommendations', icon: 'fitness_center' },
-  { key: 'rutinas', label: 'Workout Tracker', icon: 'view_timeline' },
-  { key: 'progreso', label: 'Progress', icon: 'bar_chart' },
+  { key: 'resumen', icon: 'dashboard' },
+  { key: 'perfil', icon: 'person_add' },
+  { key: 'medidas', icon: 'monitor_weight' },
+  { key: 'ejercicios', icon: 'fitness_center' },
+  { key: 'rutinas', icon: 'view_timeline' },
+  { key: 'progreso', icon: 'bar_chart' },
 ]
 
 export const PHASE_RECOMMENDATIONS: Record<TrainingPhase, string[]> = {

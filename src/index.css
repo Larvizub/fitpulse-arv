@@ -135,6 +135,23 @@ label {
   gap: 0.5rem;
 }
 
+.lang-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.lang-switch .fit-btn {
+  padding: 0.45rem 0.75rem;
+  font-size: 0.78rem;
+}
+
+.active-lang {
+  border-color: rgba(19, 236, 91, 0.55) !important;
+  color: var(--primary) !important;
+}
+
 .fit-landing-shell {
   min-height: 100vh;
   padding: 2rem;
@@ -308,6 +325,10 @@ label {
   background: rgba(10, 22, 14, 0.75);
   border-radius: 14px;
   padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
 }
 
 .fit-main-header h1 {

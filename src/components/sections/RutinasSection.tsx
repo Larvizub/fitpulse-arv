@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react'
+import type { TranslationKey } from '../../i18n/translations'
 import type { Routine, RoutineExercise } from '../../types'
 
 interface RutinasSectionProps {
@@ -17,6 +18,7 @@ interface RutinasSectionProps {
   onSaveRoutine: (event: FormEvent<HTMLFormElement>) => void
   onUpdateExerciseReps: (routine: Routine, exercise: RoutineExercise, delta: number) => void
   parseNumber: (value: string) => number
+  t: (key: TranslationKey) => string
 }
 
 export function RutinasSection({
@@ -35,62 +37,63 @@ export function RutinasSection({
   onSaveRoutine,
   onUpdateExerciseReps,
   parseNumber,
+  t,
 }: RutinasSectionProps) {
   return (
     <section className="fit-tracker-layout">
       <article className="glass-card queue-panel">
         <div className="panel-head">
-          <h2>Workout Queue</h2>
-          <span>{routines.length} rutinas</span>
+          <h2>{t('rutinas.queue')}</h2>
+          <span>{routines.length} {t('rutinas.routines')}</span>
         </div>
         <form onSubmit={onSaveRoutine} className="neon-form">
           <label>
-            Routine Name
+            {t('rutinas.routineName')}
             <input value={routineName} onChange={(event) => onSetRoutineName(event.target.value)} required />
           </label>
           <label>
-            Notes
+            {t('rutinas.notes')}
             <textarea value={routineNotes} onChange={(event) => onSetRoutineNotes(event.target.value)} rows={2} />
           </label>
           <div className="inline-grid">
-            <input placeholder="Exercise" value={exerciseName} onChange={(event) => onSetExerciseName(event.target.value)} />
+            <input placeholder={t('rutinas.exercise')} value={exerciseName} onChange={(event) => onSetExerciseName(event.target.value)} />
             <input
               type="number"
               min={1}
-              placeholder="Reps"
+              placeholder={t('rutinas.reps')}
               value={exerciseTarget}
               onChange={(event) => onSetExerciseTarget(parseNumber(event.target.value))}
             />
             <button className="fit-btn fit-btn-soft" type="button" onClick={onAddExerciseToDraft}>
-              Add
+              {t('rutinas.add')}
             </button>
           </div>
           <ul className="fit-list compact">
             {routineExercisesDraft.map((exercise) => (
               <li key={exercise.id}>
                 <strong>{exercise.name}</strong>
-                <span>{exercise.targetReps} reps objetivo</span>
+                <span>{exercise.targetReps} {t('rutinas.targetReps')}</span>
               </li>
             ))}
           </ul>
           <button className="fit-btn fit-btn-primary" type="submit">
-            Save Routine
+            {t('rutinas.saveRoutine')}
           </button>
         </form>
       </article>
 
       <article className="glass-card panel-large">
         <div className="panel-head">
-          <h2>Interactive Workout Tracker</h2>
-          <span>Live Session</span>
+          <h2>{t('rutinas.tracker')}</h2>
+          <span>{t('rutinas.sessionLive')}</span>
         </div>
         {activeRoutine ? (
           <div className="set-table">
             <div className="set-row head">
-              <span>Exercise</span>
-              <span>Target</span>
-              <span>Completed</span>
-              <span>Actions</span>
+              <span>{t('rutinas.exercise')}</span>
+              <span>{t('rutinas.target')}</span>
+              <span>{t('rutinas.completed')}</span>
+              <span>{t('rutinas.actions')}</span>
             </div>
             {activeRoutine.exercises.map((exercise) => (
               <div className="set-row" key={exercise.id}>
@@ -109,7 +112,7 @@ export function RutinasSection({
             ))}
           </div>
         ) : (
-          <p className="muted">Crea una rutina para activar el tracker interactivo.</p>
+          <p className="muted">{t('rutinas.createRoutineHint')}</p>
         )}
       </article>
     </section>

@@ -1,7 +1,10 @@
 import type { FormEvent } from 'react'
+import type { Language, TranslationKey } from '../i18n/translations'
 
 interface AuthLandingProps {
   authMode: 'login' | 'registro'
+  language: Language
+  t: (key: TranslationKey) => string
   email: string
   password: string
   registerName: string
@@ -11,6 +14,7 @@ interface AuthLandingProps {
   onPasswordChange: (value: string) => void
   onRegisterNameChange: (value: string) => void
   onRegisterGoalChange: (value: string) => void
+  onChangeLanguage: (language: Language) => void
   onGoogleLogin: () => void
   onToggleMode: () => void
   onSubmit: (event: FormEvent<HTMLFormElement>) => void
@@ -21,50 +25,63 @@ export function AuthLanding(props: AuthLandingProps) {
     <main className="fit-landing-shell">
       <section className="fit-hero-grid">
         <div className="fit-hero-copy">
-          <span className="hero-chip">New Facility Open</span>
+          <span className="hero-chip">{props.t('auth.chip')}</span>
           <h1>
-            TRANSFORM YOUR BODY
+            {props.t('auth.titleTop')}
             <br />
-            <span>MASTER YOUR MIND</span>
+            <span>{props.t('auth.titleBottom')}</span>
           </h1>
-          <p>
-            Plataforma integral para inscripción, métricas de salud, rutinas interactivas y seguimiento completo del progreso en
-            gimnasio.
-          </p>
+          <p>{props.t('auth.subtitle')}</p>
         </div>
 
         <form className="landing-card" onSubmit={props.onSubmit}>
           <div className="card-title">
-            <h2>{props.authMode === 'login' ? 'Log In' : 'Join Now'}</h2>
-            <p>{props.authMode === 'login' ? 'Accede a tu dashboard' : 'Crea tu perfil inicial'}</p>
+            <h2>{props.authMode === 'login' ? props.t('auth.loginTitle') : props.t('auth.registerTitle')}</h2>
+            <p>{props.authMode === 'login' ? props.t('auth.loginSubtitle') : props.t('auth.registerSubtitle')}</p>
+            <div className="lang-switch">
+              <button
+                className={props.language === 'es' ? 'fit-btn fit-btn-soft active-lang' : 'fit-btn fit-btn-soft'}
+                type="button"
+                onClick={() => props.onChangeLanguage('es')}
+              >
+                {props.t('common.spanish')}
+              </button>
+              <button
+                className={props.language === 'en' ? 'fit-btn fit-btn-soft active-lang' : 'fit-btn fit-btn-soft'}
+                type="button"
+                onClick={() => props.onChangeLanguage('en')}
+              >
+                {props.t('common.english')}
+              </button>
+            </div>
           </div>
 
           {props.authMode === 'registro' ? (
             <>
               <label>
-                Full Name
+                {props.t('auth.fullName')}
                 <input value={props.registerName} onChange={(event) => props.onRegisterNameChange(event.target.value)} required />
               </label>
               <label>
-                Primary Goal
+                {props.t('auth.primaryGoal')}
                 <input value={props.registerGoal} onChange={(event) => props.onRegisterGoalChange(event.target.value)} required />
               </label>
             </>
           ) : null}
 
           <label>
-            Email
+            {props.t('auth.email')}
             <input type="email" value={props.email} onChange={(event) => props.onEmailChange(event.target.value)} required />
           </label>
           <label>
-            Password
+            {props.t('auth.password')}
             <input type="password" minLength={6} value={props.password} onChange={(event) => props.onPasswordChange(event.target.value)} required />
           </label>
 
           {props.errorMessage ? <p className="error">{props.errorMessage}</p> : null}
 
           <button className="fit-btn fit-btn-primary" type="submit">
-            {props.authMode === 'login' ? 'Entrar' : 'Crear cuenta'}
+            {props.authMode === 'login' ? props.t('auth.signIn') : props.t('auth.createAccount')}
           </button>
           <button className="fit-btn fit-btn-soft google-btn" type="button" onClick={props.onGoogleLogin}>
             <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18">
@@ -85,10 +102,10 @@ export function AuthLanding(props: AuthLandingProps) {
                 d="M12 4.77c1.76 0 3.33.61 4.57 1.8l3.43-3.43C17.95 1.16 15.23 0 12 0A12 12 0 0 0 1.28 6.58l3.99 3.11c.95-2.84 3.6-4.92 6.73-4.92z"
               />
             </svg>
-            Continuar con Google
+            {props.t('auth.googleContinue')}
           </button>
           <button className="fit-btn fit-btn-soft" type="button" onClick={props.onToggleMode}>
-            {props.authMode === 'login' ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
+            {props.authMode === 'login' ? props.t('auth.toRegister') : props.t('auth.toLogin')}
           </button>
         </form>
       </section>

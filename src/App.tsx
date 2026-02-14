@@ -12,17 +12,19 @@ import { ResumenSection } from './components/sections/ResumenSection'
 import { RutinasSection } from './components/sections/RutinasSection'
 import { useAuthSession } from './hooks/useAuthSession'
 import { useGymData } from './hooks/useGymData'
+import { useLanguage } from './hooks/useLanguage'
 import type { TabKey } from './shared/types'
 
 function App() {
   const authSession = useAuthSession()
+  const languageState = useLanguage()
 
   if (!firebaseEnabled) {
     return (
       <main className="fit-landing-shell">
         <section className="landing-card">
           <h1>Total Training</h1>
-          <p>Configura Firebase en .env.local para habilitar Authentication y Realtime Database.</p>
+          <p>{languageState.t('auth.setupFirebase')}</p>
         </section>
       </main>
     )
@@ -32,7 +34,7 @@ function App() {
     return (
       <main className="fit-landing-shell">
         <section className="landing-card">
-          <h1>Conectando...</h1>
+          <h1>{languageState.t('auth.connecting')}</h1>
         </section>
       </main>
     )
@@ -42,6 +44,8 @@ function App() {
     return (
       <AuthLanding
         authMode={authSession.authMode}
+        language={languageState.language}
+        t={languageState.t}
         email={authSession.email}
         password={authSession.password}
         registerName={authSession.registerName}
@@ -51,6 +55,7 @@ function App() {
         onPasswordChange={authSession.setPassword}
         onRegisterNameChange={authSession.setRegisterName}
         onRegisterGoalChange={authSession.setRegisterGoal}
+        onChangeLanguage={languageState.setLanguage}
         onGoogleLogin={authSession.loginGoogle}
         onToggleMode={authSession.toggleMode}
         onSubmit={authSession.handleSubmit}
@@ -58,30 +63,49 @@ function App() {
     )
   }
 
-  return <AuthenticatedApp currentUser={authSession.currentUser} onLogout={authSession.logout} />
+  return (
+    <AuthenticatedApp
+      currentUser={authSession.currentUser}
+      onLogout={authSession.logout}
+      language={languageState.language}
+      t={languageState.t}
+      onChangeLanguage={languageState.setLanguage}
+    />
+  )
 }
 
 interface AuthenticatedAppProps {
   currentUser: User
   onLogout: () => Promise<void>
+  language: 'es' | 'en'
+  t: ReturnType<typeof useLanguage>['t']
+  onChangeLanguage: (language: 'es' | 'en') => void
 }
 
-function AuthenticatedApp({ currentUser, onLogout }: AuthenticatedAppProps) {
+function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage }: AuthenticatedAppProps) {
   const [activeTab, setActiveTab] = useState<TabKey>('resumen')
   const gymData = useGymData(currentUser)
+  const phaseLabel = t(`phase.${gymData.profile?.trainingPhase ?? 'adaptacion'}`)
 
   return (
     <main className="fit-app">
       <AppSidebar
         activeTab={activeTab}
-        userName={gymData.profile?.fullName || 'Gym Member'}
+        userName={gymData.profile?.fullName || t('common.gymMember')}
         email={currentUser.email ?? ''}
+        t={t}
         onChangeTab={setActiveTab}
         onLogout={onLogout}
       />
 
       <section className="fit-main">
-        <AppHeader activeTab={activeTab} trainingPhase={gymData.profile?.trainingPhase ?? 'adaptacion'} />
+        <AppHeader
+          activeTab={activeTab}
+          trainingPhase={phaseLabel}
+          language={language}
+          t={t}
+          onChangeLanguage={onChangeLanguage}
+        />
 
         {activeTab === 'resumen' ? (
           <ResumenSection
@@ -90,6 +114,7 @@ function AuthenticatedApp({ currentUser, onLogout }: AuthenticatedAppProps) {
             routineCount={gymData.routines.length}
             measurementCount={gymData.measurements.length}
             profile={gymData.profile}
+            t={t}
           />
         ) : null}
 
@@ -99,6 +124,7 @@ function AuthenticatedApp({ currentUser, onLogout }: AuthenticatedAppProps) {
             onSaveProfile={gymData.onSaveProfile}
             onChangeProfile={gymData.setProfileDraft}
             parseNumber={gymData.parseNumber}
+            t={t}
           />
         ) : null}
 
@@ -109,13 +135,15 @@ function AuthenticatedApp({ currentUser, onLogout }: AuthenticatedAppProps) {
             onChangeMeasurementDraft={gymData.setMeasurementDraft}
             onAddMeasurement={gymData.onAddMeasurement}
             parseNumber={gymData.parseNumber}
+            t={t}
           />
         ) : null}
 
         {activeTab === 'ejercicios' ? (
           <EjerciciosSection
-            phase={gymData.profile?.trainingPhase ?? 'adaptacion'}
+            phase={phaseLabel}
             recommended={gymData.recommended}
+            t={t}
           />
         ) : null}
 
@@ -136,6 +164,7 @@ function AuthenticatedApp({ currentUser, onLogout }: AuthenticatedAppProps) {
             onSaveRoutine={gymData.onSaveRoutine}
             onUpdateExerciseReps={gymData.onUpdateExerciseReps}
             parseNumber={gymData.parseNumber}
+            t={t}
           />
         ) : null}
 
@@ -146,6 +175,7 @@ function AuthenticatedApp({ currentUser, onLogout }: AuthenticatedAppProps) {
             onSetProgressDraft={gymData.setProgressDraft}
             onAddProgress={gymData.onAddProgress}
             parseNumber={gymData.parseNumber}
+            t={t}
           />
         ) : null}
       </section>
