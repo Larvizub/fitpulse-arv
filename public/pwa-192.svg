@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Fitpulse PWA icon 192">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b2a1b"/>
+      <stop offset="100%" stop-color="#03170f"/>
+    </linearGradient>
+    <linearGradient id="fg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8ffcb3"/>
+      <stop offset="100%" stop-color="#13ec5b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="120" fill="url(#bg)"/>
+  <path fill="url(#fg)" d="M128 124h258v70H202v74h156v67H202v129h-74z"/>
+</svg>

@@ -1,4 +1,4 @@
-# Total Training (React + TypeScript + Vite)
+# Fitpulse (React + TypeScript + Vite)
 
 Aplicación web para el seguimiento completo del proceso en gimnasio:
 

@@ -19,7 +19,7 @@ export function AppSidebar({ activeTab, userName, email, t, onChangeTab, onLogou
       <div className="fit-brand">
         <div className="fit-brand-badge">F</div>
         <span>
-          Fit<span>Track</span>
+          Fit<span>pulse</span>
         </span>
       </div>
 

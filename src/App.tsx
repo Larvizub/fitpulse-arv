@@ -23,7 +23,7 @@ function App() {
     return (
       <main className="fit-landing-shell">
         <section className="landing-card">
-          <h1>Total Training</h1>
+          <h1>Fitpulse</h1>
           <p>{languageState.t('auth.setupFirebase')}</p>
         </section>
       </main>
