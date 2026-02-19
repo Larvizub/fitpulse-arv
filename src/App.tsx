@@ -148,11 +148,11 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
         {activeTab === 'ejercicios' ? (
           <EjerciciosSection
             phase={phaseLabel}
-            recommended={gymData.recommended}
+            routines={gymData.routines}
             weeklyPlan={gymData.weeklyPlan}
-            routineOptions={gymData.routines.map((routine) => routine.name)}
             onUpdateWeeklyPlanItem={gymData.onUpdateWeeklyPlanItem}
             onSaveQuickWorkout={gymData.onSaveQuickWorkout}
+            onGoToRoutines={() => setActiveTab('rutinas')}
             t={t}
           />
         ) : null}
@@ -168,11 +168,15 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
             routineExercisesDraft={gymData.routineExercisesDraft}
             onSetRoutineName={gymData.setRoutineName}
             onSetRoutineNotes={gymData.setRoutineNotes}
+            onSelectRoutine={gymData.setSelectedRoutineId}
+            onDeleteRoutine={gymData.onDeleteRoutine}
             onSetExerciseName={gymData.setExerciseName}
             onSetExerciseTarget={gymData.setExerciseTarget}
             onAddExerciseToDraft={gymData.onAddExerciseToDraft}
+            onDeleteExerciseFromDraft={gymData.onDeleteExerciseFromDraft}
             onSaveRoutine={gymData.onSaveRoutine}
             onUpdateExerciseReps={gymData.onUpdateExerciseReps}
+            onDeleteExerciseFromRoutine={gymData.onDeleteExerciseFromRoutine}
             parseNumber={gymData.parseNumber}
             t={t}
           />

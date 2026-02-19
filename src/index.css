@@ -964,6 +964,11 @@ label {
   grid-template-columns: 1fr;
 }
 
+.planner-empty-routines {
+  display: grid;
+  gap: 0.7rem;
+}
+
 .planner-week-grid {
   display: grid;
   gap: 0.7rem;
@@ -1041,8 +1046,14 @@ label {
 .fit-live-layout {
   display: grid;
   gap: 0.9rem;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 340px 1fr;
   min-height: 70vh;
+}
+
+.routine-sidebar-stack {
+  display: grid;
+  align-content: start;
+  gap: 0.9rem;
 }
 
 .fit-live-layout > * {
@@ -1155,9 +1166,53 @@ label {
   background: rgba(19, 236, 91, 0.12);
 }
 
+.live-queue-list li {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.routine-select-btn {
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  display: grid;
+  gap: 0.2rem;
+  padding: 0;
+  cursor: pointer;
+}
+
+.routine-remove-btn {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.74rem;
+}
+
+.draft-exercise-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
 .live-form-compact {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: 0.8rem;
+}
+
+.form-separator {
+  margin: 0.2rem 0;
+  padding-top: 0.35rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.form-separator span {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  font-weight: 700;
 }
 
 .live-main-card {
@@ -1203,13 +1258,13 @@ label {
 }
 
 .queue-panel {
-  max-height: 640px;
+  max-height: 380px;
   overflow: auto;
 }
 
 .inline-grid {
   display: grid;
-  grid-template-columns: 1fr 100px auto;
+  grid-template-columns: 100px auto;
   gap: 0.55rem;
 }
 
@@ -1248,6 +1303,16 @@ label {
   width: 34px;
   height: 30px;
   cursor: pointer;
+}
+
+.set-actions .set-action-delete {
+  width: auto;
+  padding: 0 0.6rem;
+}
+
+.routine-empty-state {
+  margin: 0;
+  padding: 0.85rem;
 }
 
 .set-actions button:hover {

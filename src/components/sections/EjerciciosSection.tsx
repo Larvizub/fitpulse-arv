@@ -1,24 +1,24 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { TranslationKey } from '../../i18n/translations'
-import type { WeeklyPlanItem } from '../../types'
+import type { Routine, WeeklyPlanItem } from '../../types'
 
 interface EjerciciosSectionProps {
   phase: string
-  recommended: string[]
+  routines: Routine[]
   weeklyPlan: WeeklyPlanItem[]
-  routineOptions: string[]
   onUpdateWeeklyPlanItem: (index: number, updates: Partial<WeeklyPlanItem>) => Promise<void>
   onSaveQuickWorkout: (payload: { exerciseName: string; reps: number; sets: number; durationSec: number }) => Promise<void>
+  onGoToRoutines: () => void
   t: (key: TranslationKey) => string
 }
 
 export function EjerciciosSection({
   phase,
-  recommended,
+  routines,
   weeklyPlan,
-  routineOptions,
   onUpdateWeeklyPlanItem,
   onSaveQuickWorkout,
+  onGoToRoutines,
   t,
 }: EjerciciosSectionProps) {
   const [workoutStarted, setWorkoutStarted] = useState(false)
@@ -28,26 +28,20 @@ export function EjerciciosSection({
   const [sessionReps, setSessionReps] = useState(8)
   const [activeTrackIndex, setActiveTrackIndex] = useState(0)
 
-  const planOptions = useMemo(() => Array.from(new Set([...recommended, ...routineOptions])), [recommended, routineOptions])
+  const routineOptions = useMemo(
+    () => Array.from(new Set(routines.flatMap((routine) => routine.exercises.map((exercise) => exercise.name)))),
+    [routines],
+  )
+  const planOptions = useMemo(() => routineOptions, [routineOptions])
+  const hasRoutineOptions = planOptions.length > 0
   const todayIndex = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1
   const activePlan = weeklyPlan[todayIndex] ?? weeklyPlan[0]
   const workoutQueue = useMemo(() => {
     const queue = weeklyPlan.filter((slot) => !slot.isRestDay)
-    if (queue.length > 0) {
-      return queue
-    }
-
-    return [
-      {
-        day: 'Today',
-        exerciseName: activePlan?.exerciseName || 'Workout Session',
-        durationMin: activePlan?.durationMin || 30,
-        isRestDay: false,
-      },
-    ]
-  }, [weeklyPlan, activePlan?.durationMin, activePlan?.exerciseName])
+    return queue
+  }, [weeklyPlan])
   const activeTrack = workoutQueue[activeTrackIndex] ?? workoutQueue[0]
-  const trackDurationSec = Math.max(60, (activeTrack?.durationMin || 1) * 60)
+  const trackDurationSec = Math.max(60, (activeTrack?.durationMin || 0) * 60)
   const progressPercent = Math.min(100, (elapsedSec / trackDurationSec) * 100)
 
   useEffect(() => {
@@ -63,6 +57,10 @@ export function EjerciciosSection({
   }, [isPlaying, workoutStarted])
 
   async function handleStartWorkout() {
+    if (!hasRoutineOptions || !activePlan || activePlan.isRestDay) {
+      return
+    }
+
     setElapsedSec(0)
     setSessionSets(1)
     setSessionReps(Math.max(1, activePlan?.durationMin ? Math.round(activePlan.durationMin / 6) : 8))
@@ -168,21 +166,28 @@ export function EjerciciosSection({
 
         <article className="glass-card">
           <div className="panel-head">
-            <h2>{t('ejercicios.title')}</h2>
+            <h2>{t('ejercicios.userRoutines')}</h2>
             <span>{phase}</span>
           </div>
-          <ul className="recommend-list planner-recommend-list">
-            {recommended.map((exercise, index) => (
-              <li key={exercise}>
-                <div>
-                  <h4>{exercise}</h4>
-                  <p>
-                    {index < 2 ? t('ejercicios.high') : index === 2 ? t('ejercicios.medium') : t('ejercicios.low')} · 45-75m
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          {routines.length ? (
+            <ul className="recommend-list planner-recommend-list">
+              {routines.map((routine) => (
+                <li key={routine.id}>
+                  <div>
+                    <h4>{routine.name}</h4>
+                    <p>{routine.exercises.length} {t('rutinas.exercise')}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <div className="planner-empty-routines">
+              <p className="muted">{t('ejercicios.noRoutines')}</p>
+              <button className="fit-btn fit-btn-primary" type="button" onClick={onGoToRoutines}>
+                {t('ejercicios.createRoutinesCta')}
+              </button>
+            </div>
+          )}
         </article>
       </aside>
 
@@ -227,7 +232,19 @@ export function EjerciciosSection({
               ) : (
                 <div className="planner-session planner-session-rest">
                   <p className="muted">Rest Day</p>
-                  <button className="fit-btn fit-btn-soft" type="button" onClick={() => onUpdateWeeklyPlanItem(index, { isRestDay: false, exerciseName: planOptions[0], durationMin: 45 })}>
+                  <button
+                    className="fit-btn fit-btn-soft"
+                    type="button"
+                    disabled={!hasRoutineOptions}
+                    onClick={() => {
+                      if (!hasRoutineOptions) {
+                        onGoToRoutines()
+                        return
+                      }
+
+                      onUpdateWeeklyPlanItem(index, { isRestDay: false, exerciseName: planOptions[0], durationMin: 45 })
+                    }}
+                  >
                     Activar sesión
                   </button>
                 </div>
@@ -249,7 +266,7 @@ export function EjerciciosSection({
             <small>Est. Burn</small>
             <strong>3,200 kcal</strong>
           </div>
-          <button className="fit-btn fit-btn-primary" type="button" onClick={handleStartWorkout}>
+          <button className="fit-btn fit-btn-primary" type="button" onClick={handleStartWorkout} disabled={!hasRoutineOptions || !activePlan || activePlan.isRestDay}>
             Start today's workout
           </button>
         </footer>

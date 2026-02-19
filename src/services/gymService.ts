@@ -22,6 +22,47 @@ function mapList<T>(value: T | T[] | Record<string, T> | null | undefined): T[] 
   return Object.values(value)
 }
 
+function normalizeRoutineExercise(raw: unknown): RoutineExercise | null {
+  if (!raw || typeof raw !== 'object') {
+    return null
+  }
+
+  const source = raw as Partial<RoutineExercise>
+  if (!source.name) {
+    return null
+  }
+
+  return {
+    id: source.id ?? crypto.randomUUID(),
+    name: String(source.name),
+    targetReps: Number(source.targetReps ?? 0),
+    completedReps: Number(source.completedReps ?? 0),
+  }
+}
+
+function normalizeRoutine(raw: unknown): Routine | null {
+  if (!raw || typeof raw !== 'object') {
+    return null
+  }
+
+  const source = raw as Partial<Routine> & { exercises?: RoutineExercise[] | Record<string, RoutineExercise> }
+  if (!source.name) {
+    return null
+  }
+
+  const normalizedExercises = mapList(source.exercises)
+    .map((exercise) => normalizeRoutineExercise(exercise))
+    .filter((exercise): exercise is RoutineExercise => Boolean(exercise))
+
+  return {
+    id: source.id ?? crypto.randomUUID(),
+    name: String(source.name),
+    notes: String(source.notes ?? ''),
+    date: String(source.date ?? new Date().toISOString()),
+    exercises: normalizedExercises,
+  }
+}
+
 export function subscribeToUserData(uid: string, subscriptions: UserSubscriptions) {
   if (!db) {
     subscriptions.profile(null)
@@ -49,8 +90,11 @@ export function subscribeToUserData(uid: string, subscriptions: UserSubscription
   })
 
   const unsubRoutines = onValue(routinesRef, (snapshot) => {
-    const value = snapshot.val() as Record<string, Routine> | null
-    const list = mapList(value).sort((a, b) => (a.date < b.date ? 1 : -1))
+    const value = snapshot.val() as Record<string, unknown> | null
+    const list = mapList(value)
+      .map((routine) => normalizeRoutine(routine))
+      .filter((routine): routine is Routine => Boolean(routine))
+      .sort((a, b) => (a.date < b.date ? 1 : -1))
     subscriptions.routines(list)
   })
 
@@ -130,6 +174,22 @@ export async function addRoutine(uid: string, payload: Omit<Routine, 'id' | 'dat
     ...payload,
     date: new Date().toISOString(),
   } satisfies Routine)
+}
+
+export async function deleteRoutine(uid: string, routineId: string) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await set(ref(db, `users/${uid}/routines/${routineId}`), null)
+}
+
+export async function updateRoutineExercises(uid: string, routineId: string, exercises: RoutineExercise[]) {
+  if (!db) {
+    throw new Error('Firebase no está configurado')
+  }
+
+  await update(ref(db, `users/${uid}/routines/${routineId}`), { exercises })
 }
 
 export async function updateRoutineExerciseReps(

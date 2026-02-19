@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import type { User } from 'firebase/auth'
 import type {
   Measurement,
@@ -17,23 +17,27 @@ import {
   clearProgressEntries,
   deleteMeasurement,
   deleteProgressEntry,
+  deleteRoutine,
   saveUserProfile,
   saveWeeklyPlan,
   subscribeToUserData,
   updateMeasurement,
+  updateRoutineExercises,
   updateRoutineExerciseReps,
 } from '../services/gymService'
 import { PHASE_RECOMMENDATIONS } from '../constants/gym'
 import { getBmi, parseNumber } from '../shared/utils'
 
 const WEEK_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const DEFAULT_ROUTINE_NAMES = new Set(Object.values(PHASE_RECOMMENDATIONS).flat())
 
-function buildDefaultWeeklyPlan(recommendations: string[]): WeeklyPlanItem[] {
+function buildDefaultWeeklyPlan(exercises: string[]): WeeklyPlanItem[] {
   return WEEK_DAYS.map((day, index) => {
-    const isRestDay = index >= 5
+    const hasExercises = exercises.length > 0
+    const isRestDay = !hasExercises || index >= 5
     return {
       day,
-      exerciseName: isRestDay ? 'Rest Day' : recommendations[index % recommendations.length],
+      exerciseName: isRestDay ? 'Rest Day' : exercises[index % exercises.length],
       durationMin: isRestDay ? 0 : index < 2 ? 65 : 45,
       isRestDay,
     }
@@ -69,6 +73,8 @@ export function useGymData(currentUser: User) {
   const [exerciseName, setExerciseName] = useState('')
   const [exerciseTarget, setExerciseTarget] = useState(10)
   const [routineExercisesDraft, setRoutineExercisesDraft] = useState<RoutineExercise[]>([])
+  const [selectedRoutineId, setSelectedRoutineId] = useState<string | null>(null)
+  const cleanedTemplateRoutinesRef = useRef(false)
 
   const [progressDraft, setProgressDraft] = useState({
     mood: 'media' as ProgressEntry['mood'],
@@ -98,20 +104,46 @@ export function useGymData(currentUser: User) {
     })
   }, [currentUser])
 
+  useEffect(() => {
+    if (cleanedTemplateRoutinesRef.current || !routines.length) {
+      return
+    }
+
+    const onlyDefaultTemplates = routines.every((routine) => {
+      const templateName = DEFAULT_ROUTINE_NAMES.has(routine.name)
+      const noNotes = !routine.notes.trim()
+      const noProgress = routine.exercises.every((exercise) => exercise.completedReps === 0)
+      return templateName && noNotes && noProgress
+    })
+
+    if (!onlyDefaultTemplates) {
+      cleanedTemplateRoutinesRef.current = true
+      return
+    }
+
+    cleanedTemplateRoutinesRef.current = true
+    Promise.all(routines.map((routine) => deleteRoutine(currentUser.uid, routine.id))).catch(() => {
+      cleanedTemplateRoutinesRef.current = false
+    })
+  }, [currentUser.uid, routines])
+
   const latestMeasurement = measurements[0]
   const bmi = latestMeasurement && profile?.heightCm ? getBmi(latestMeasurement.weightKg, profile.heightCm) : 0
 
   const completionRate = useMemo(() => {
-    const allExercises = routines.flatMap((routine) => routine.exercises)
-    const total = allExercises.reduce((acc, exercise) => acc + exercise.targetReps, 0)
-    const done = allExercises.reduce((acc, exercise) => acc + Math.min(exercise.completedReps, exercise.targetReps), 0)
+    const allExercises = routines.flatMap((routine) => routine.exercises).filter(Boolean)
+    const total = allExercises.reduce((acc, exercise) => acc + Number(exercise.targetReps ?? 0), 0)
+    const done = allExercises.reduce(
+      (acc, exercise) => acc + Math.min(Number(exercise.completedReps ?? 0), Number(exercise.targetReps ?? 0)),
+      0,
+    )
     return total ? Math.round((done / total) * 100) : 0
   }, [routines])
 
   const recommended = useMemo(() => {
     const phaseRecommendations = PHASE_RECOMMENDATIONS[profile?.trainingPhase ?? 'adaptacion']
     const routineBased = routines
-      .flatMap((routine) => routine.exercises.map((exercise) => exercise.name))
+      .flatMap((routine) => routine.exercises.map((exercise) => exercise?.name).filter(Boolean))
       .slice(0, 4)
     const adaptive = completionRate >= 70
       ? ['Progressive Overload Session', 'Power Endurance Block']
@@ -168,6 +200,10 @@ export function useGymData(currentUser: User) {
     setExerciseTarget(10)
   }
 
+  function onDeleteExerciseFromDraft(exerciseId: string) {
+    setRoutineExercisesDraft((current) => current.filter((exercise) => exercise.id !== exerciseId))
+  }
+
   async function onSaveRoutine(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     if (!routineName.trim() || !routineExercisesDraft.length) {
@@ -189,6 +225,15 @@ export function useGymData(currentUser: User) {
     await updateRoutineExerciseReps(currentUser.uid, routine, exercise, delta)
   }
 
+  async function onDeleteExerciseFromRoutine(routine: Routine, exerciseId: string) {
+    const exercises = routine.exercises.filter((exercise) => exercise.id !== exerciseId)
+    await updateRoutineExercises(currentUser.uid, routine.id, exercises)
+  }
+
+  async function onDeleteRoutine(routineId: string) {
+    await deleteRoutine(currentUser.uid, routineId)
+  }
+
   async function onAddProgress(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
     await addProgressEntry(currentUser.uid, progressDraft)
@@ -203,7 +248,32 @@ export function useGymData(currentUser: User) {
     await clearProgressEntries(currentUser.uid)
   }
 
-  const weeklyPlanData = weeklyPlan.length ? weeklyPlan : buildDefaultWeeklyPlan(recommended)
+  const routineExerciseNames = useMemo(
+    () => Array.from(new Set(routines.flatMap((routine) => routine.exercises.map((exercise) => exercise.name).filter(Boolean)))),
+    [routines],
+  )
+
+  const weeklyPlanData = useMemo(() => {
+    if (!routineExerciseNames.length) {
+      return buildDefaultWeeklyPlan([])
+    }
+
+    const sourcePlan = weeklyPlan.length ? weeklyPlan : buildDefaultWeeklyPlan(routineExerciseNames)
+    return sourcePlan.map((slot) => {
+      if (slot.isRestDay) {
+        return slot
+      }
+
+      if (!routineExerciseNames.includes(slot.exerciseName)) {
+        return {
+          ...slot,
+          exerciseName: routineExerciseNames[0],
+        }
+      }
+
+      return slot
+    })
+  }, [routineExerciseNames, weeklyPlan])
 
   async function onUpdateWeeklyPlanItem(index: number, updates: Partial<WeeklyPlanItem>) {
     const nextPlan = weeklyPlanData.map((item, itemIndex) => {
@@ -250,12 +320,13 @@ export function useGymData(currentUser: User) {
     bmi,
     completionRate,
     recommended,
-    activeRoutine: routines[0],
+    activeRoutine: routines.find((routine) => routine.id === selectedRoutineId) ?? routines[0],
     parseNumber,
     setProfileDraft,
     setMeasurementDraft,
     setRoutineName,
     setRoutineNotes,
+    setSelectedRoutineId,
     setExerciseName,
     setExerciseTarget,
     setProgressDraft,
@@ -265,8 +336,11 @@ export function useGymData(currentUser: User) {
     onUpdateMeasurement,
     onDeleteMeasurement,
     onAddExerciseToDraft,
+    onDeleteExerciseFromDraft,
     onSaveRoutine,
     onUpdateExerciseReps,
+    onDeleteExerciseFromRoutine,
+    onDeleteRoutine,
     onAddProgress,
     onDeleteProgress,
     onClearProgress,

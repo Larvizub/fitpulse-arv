@@ -90,6 +90,9 @@ export const translations = {
     },
     ejercicios: {
       title: 'Recomendaciones por fase',
+      userRoutines: 'Rutinas del usuario',
+      noRoutines: 'Aún no tienes rutinas creadas.',
+      createRoutinesCta: 'Crear rutinas',
       weekly: 'Plan semanal',
       range: '23 Oct - 29 Oct',
       intensity: 'Intensidad',
@@ -102,9 +105,17 @@ export const translations = {
       routines: 'rutinas',
       routineName: 'Nombre de rutina',
       notes: 'Notas',
+      exercisesSection: 'Ejercicios de la rutina',
+      draftExercises: 'Ejercicios agregados',
+      manageHint: 'Selecciona una rutina para verla, editar repeticiones o eliminarla.',
       exercise: 'Ejercicio',
+      exerciseName: 'Nombre del ejercicio',
       reps: 'Reps',
       add: 'Agregar',
+      delete: 'Eliminar',
+      deleteRoutine: 'Eliminar rutina',
+      deleteExercise: 'Eliminar ejercicio',
+      emptyExercises: 'Esta rutina no tiene ejercicios.',
       targetReps: 'reps objetivo',
       saveRoutine: 'Guardar rutina',
       tracker: 'Tracker de entrenamiento interactivo',
@@ -222,6 +233,9 @@ export const translations = {
     },
     ejercicios: {
       title: 'Phase recommendations',
+      userRoutines: 'Your routines',
+      noRoutines: 'You do not have routines yet.',
+      createRoutinesCta: 'Create routines',
       weekly: 'Weekly schedule',
       range: 'Oct 23 - Oct 29',
       intensity: 'Intensity',
@@ -234,9 +248,17 @@ export const translations = {
       routines: 'routines',
       routineName: 'Routine name',
       notes: 'Notes',
+      exercisesSection: 'Routine exercises',
+      draftExercises: 'Added exercises',
+      manageHint: 'Select a routine to view it, update reps, or delete it.',
       exercise: 'Exercise',
+      exerciseName: 'Exercise name',
       reps: 'Reps',
       add: 'Add',
+      delete: 'Delete',
+      deleteRoutine: 'Delete routine',
+      deleteExercise: 'Delete exercise',
+      emptyExercises: 'This routine has no exercises.',
       targetReps: 'target reps',
       saveRoutine: 'Save routine',
       tracker: 'Interactive workout tracker',
@@ -343,6 +365,9 @@ export type TranslationKey =
   | 'medidas.cleared'
   | 'medidas.clearError'
   | 'ejercicios.title'
+  | 'ejercicios.userRoutines'
+  | 'ejercicios.noRoutines'
+  | 'ejercicios.createRoutinesCta'
   | 'ejercicios.weekly'
   | 'ejercicios.range'
   | 'ejercicios.intensity'
@@ -353,9 +378,17 @@ export type TranslationKey =
   | 'rutinas.routines'
   | 'rutinas.routineName'
   | 'rutinas.notes'
+  | 'rutinas.exercisesSection'
+  | 'rutinas.draftExercises'
+  | 'rutinas.manageHint'
   | 'rutinas.exercise'
+  | 'rutinas.exerciseName'
   | 'rutinas.reps'
   | 'rutinas.add'
+  | 'rutinas.delete'
+  | 'rutinas.deleteRoutine'
+  | 'rutinas.deleteExercise'
+  | 'rutinas.emptyExercises'
   | 'rutinas.targetReps'
   | 'rutinas.saveRoutine'
   | 'rutinas.tracker'
