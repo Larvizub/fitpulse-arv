@@ -1,6 +1,7 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 import type { TranslationKey } from '../../i18n/translations'
+import { showConfirmToast, toast } from '../../shared/toast'
 
 interface MeasurementDraft {
   weightKg: number
@@ -43,8 +44,8 @@ export function MedidasSection({
   parseNumber,
   t,
 }: MedidasSectionProps) {
-  const [clearStatus, setClearStatus] = useState<'idle' | 'clearing' | 'cleared' | 'error'>('idle')
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [isClearing, setIsClearing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
   const [editingMeasurementId, setEditingMeasurementId] = useState<string | null>(null)
   const latest = measurements[0]
   const previous = measurements[1]
@@ -55,23 +56,27 @@ export function MedidasSection({
   const totalLoss = latest ? latest.weightKg - baselineWeight : 0
 
   async function handleClearHistory() {
-    const confirmed = window.confirm(t('medidas.clearConfirm'))
-    if (!confirmed) {
-      return
-    }
-
-    setClearStatus('clearing')
-    try {
-      await onClearHistory()
-      setClearStatus('cleared')
-    } catch {
-      setClearStatus('error')
-    }
+    showConfirmToast({
+      message: t('medidas.clearConfirm'),
+      actionLabel: t('medidas.clearHistory'),
+      cancelLabel: t('medidas.cancel'),
+      onConfirm: async () => {
+        setIsClearing(true)
+        try {
+          await onClearHistory()
+          toast.success(t('medidas.cleared'))
+        } catch {
+          toast.error(t('medidas.clearError'))
+        } finally {
+          setIsClearing(false)
+        }
+      },
+    })
   }
 
   async function handleSaveMeasurement(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    setSaveStatus('saving')
+    setIsSaving(true)
 
     try {
       if (editingMeasurementId) {
@@ -86,10 +91,12 @@ export function MedidasSection({
         await onAddMeasurement(event)
       }
 
-      setSaveStatus('saved')
+      toast.success(t('medidas.saveSuccess'))
       setEditingMeasurementId(null)
     } catch {
-      setSaveStatus('error')
+      toast.error(t('medidas.saveError'))
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -105,12 +112,19 @@ export function MedidasSection({
   }
 
   async function handleDeleteMeasurement(measurementId: string) {
-    const confirmed = window.confirm('¿Deseas borrar este registro del historial?')
-    if (!confirmed) {
-      return
-    }
-
-    await onDeleteMeasurement(measurementId)
+    showConfirmToast({
+      message: t('medidas.deleteConfirm'),
+      actionLabel: t('rutinas.delete'),
+      cancelLabel: t('medidas.cancel'),
+      onConfirm: async () => {
+        try {
+          await onDeleteMeasurement(measurementId)
+          toast.success(t('medidas.deleteSuccess'))
+        } catch {
+          toast.error(t('medidas.deleteError'))
+        }
+      },
+    })
   }
 
   return (
@@ -183,11 +197,9 @@ export function MedidasSection({
             {totalLoss >= 0 ? '+' : ''}
             {totalLoss.toFixed(1)} kg desde el inicio
           </p>
-          <button className="fit-btn fit-btn-soft" type="button" onClick={handleClearHistory} disabled={clearStatus === 'clearing'}>
-            {clearStatus === 'clearing' ? t('medidas.clearing') : t('medidas.clearHistory')}
+          <button className="fit-btn fit-btn-soft" type="button" onClick={handleClearHistory} disabled={isClearing}>
+            {isClearing ? t('medidas.clearing') : t('medidas.clearHistory')}
           </button>
-          {clearStatus === 'cleared' ? <p className="save-feedback success">{t('medidas.cleared')}</p> : null}
-          {clearStatus === 'error' ? <p className="save-feedback error-state">{t('medidas.clearError')}</p> : null}
         </article>
       </div>
 
@@ -241,7 +253,7 @@ export function MedidasSection({
               />
             </label>
             <button className="fit-btn fit-btn-primary full" type="submit">
-              {saveStatus === 'saving' ? 'Guardando...' : editingMeasurementId ? 'Guardar cambios' : t('medidas.save')}
+              {isSaving ? 'Guardando...' : editingMeasurementId ? 'Guardar cambios' : t('medidas.save')}
             </button>
             {editingMeasurementId ? (
               <button
@@ -249,14 +261,12 @@ export function MedidasSection({
                 type="button"
                 onClick={() => {
                   setEditingMeasurementId(null)
-                  setSaveStatus('idle')
+                  setIsSaving(false)
                 }}
               >
                 Cancelar edición
               </button>
             ) : null}
-            {saveStatus === 'saved' ? <p className="save-feedback success">Información guardada correctamente.</p> : null}
-            {saveStatus === 'error' ? <p className="save-feedback error-state">No se pudo guardar la medición.</p> : null}
           </form>
         </article>
 

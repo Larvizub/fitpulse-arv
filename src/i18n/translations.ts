@@ -87,6 +87,12 @@ export const translations = {
       clearConfirm: '¿Seguro que deseas borrar todo el historial de métricas?',
       cleared: 'Historial borrado correctamente',
       clearError: 'No se pudo borrar el historial',
+      deleteConfirm: '¿Deseas borrar este registro del historial?',
+      deleteSuccess: 'Registro eliminado correctamente.',
+      deleteError: 'No se pudo eliminar el registro.',
+      saveSuccess: 'Información guardada correctamente.',
+      saveError: 'No se pudo guardar la medición.',
+      cancel: 'Cancelar',
     },
     ejercicios: {
       title: 'Recomendaciones por fase',
@@ -133,9 +139,18 @@ export const translations = {
       energy: 'Energía (1-10)',
       notes: 'Notas',
       save: 'Guardar progreso',
+      saveSuccess: 'Progreso guardado correctamente.',
+      saveError: 'No se pudo guardar el progreso.',
       noNotes: 'Sin notas',
       moodLabel: 'Ánimo',
       energyLabel: 'Energía',
+      deleteConfirm: '¿Deseas borrar este registro de progreso?',
+      clearConfirm: '¿Deseas borrar todo el progreso registrado?',
+      deleteSuccess: 'Registro de progreso eliminado.',
+      clearSuccess: 'Todo el progreso fue eliminado.',
+      actionError: 'No se pudo completar la acción.',
+      cancel: 'Cancelar',
+      clearAll: 'Borrar todo',
     },
     phase: {
       adaptacion: 'Adaptación',
@@ -230,6 +245,12 @@ export const translations = {
       clearConfirm: 'Are you sure you want to delete the entire metrics history?',
       cleared: 'History cleared successfully',
       clearError: 'Could not clear history',
+      deleteConfirm: 'Do you want to delete this entry from history?',
+      deleteSuccess: 'Entry deleted successfully.',
+      deleteError: 'Could not delete the entry.',
+      saveSuccess: 'Information saved successfully.',
+      saveError: 'Could not save the measurement.',
+      cancel: 'Cancel',
     },
     ejercicios: {
       title: 'Phase recommendations',
@@ -276,9 +297,18 @@ export const translations = {
       energy: 'Energy (1-10)',
       notes: 'Notes',
       save: 'Save progress',
+      saveSuccess: 'Progress saved successfully.',
+      saveError: 'Could not save progress.',
       noNotes: 'No notes',
       moodLabel: 'Mood',
       energyLabel: 'Energy',
+      deleteConfirm: 'Do you want to delete this progress entry?',
+      clearConfirm: 'Do you want to delete all recorded progress?',
+      deleteSuccess: 'Progress entry deleted.',
+      clearSuccess: 'All progress was deleted.',
+      actionError: 'Could not complete the action.',
+      cancel: 'Cancel',
+      clearAll: 'Clear all',
     },
     phase: {
       adaptacion: 'Adaptation',
@@ -364,6 +394,12 @@ export type TranslationKey =
   | 'medidas.clearConfirm'
   | 'medidas.cleared'
   | 'medidas.clearError'
+  | 'medidas.deleteConfirm'
+  | 'medidas.deleteSuccess'
+  | 'medidas.deleteError'
+  | 'medidas.saveSuccess'
+  | 'medidas.saveError'
+  | 'medidas.cancel'
   | 'ejercicios.title'
   | 'ejercicios.userRoutines'
   | 'ejercicios.noRoutines'
@@ -404,9 +440,18 @@ export type TranslationKey =
   | 'progreso.energy'
   | 'progreso.notes'
   | 'progreso.save'
+  | 'progreso.saveSuccess'
+  | 'progreso.saveError'
   | 'progreso.noNotes'
   | 'progreso.moodLabel'
   | 'progreso.energyLabel'
+  | 'progreso.deleteConfirm'
+  | 'progreso.clearConfirm'
+  | 'progreso.deleteSuccess'
+  | 'progreso.clearSuccess'
+  | 'progreso.actionError'
+  | 'progreso.cancel'
+  | 'progreso.clearAll'
   | 'phase.adaptacion'
   | 'phase.volumen'
   | 'phase.definicion'

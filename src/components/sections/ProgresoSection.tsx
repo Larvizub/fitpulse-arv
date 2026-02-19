@@ -1,6 +1,7 @@
 import type { FormEvent } from 'react'
 import type { TranslationKey } from '../../i18n/translations'
 import type { ProgressEntry } from '../../types'
+import { showConfirmToast, toast } from '../../shared/toast'
 
 interface ProgressDraft {
   mood: ProgressEntry['mood']
@@ -29,22 +30,47 @@ export function ProgresoSection({
   parseNumber,
   t,
 }: ProgresoSectionProps) {
-  async function handleDeleteProgress(progressEntryId: string) {
-    const confirmed = window.confirm('¿Deseas borrar este registro de progreso?')
-    if (!confirmed) {
-      return
-    }
+  async function handleAddProgress(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
 
-    await onDeleteProgress(progressEntryId)
+    try {
+      await onAddProgress(event)
+      toast.success(t('progreso.saveSuccess'))
+    } catch {
+      toast.error(t('progreso.saveError'))
+    }
+  }
+
+  async function handleDeleteProgress(progressEntryId: string) {
+    showConfirmToast({
+      message: t('progreso.deleteConfirm'),
+      actionLabel: t('rutinas.delete'),
+      cancelLabel: t('progreso.cancel'),
+      onConfirm: async () => {
+        try {
+          await onDeleteProgress(progressEntryId)
+          toast.success(t('progreso.deleteSuccess'))
+        } catch {
+          toast.error(t('progreso.actionError'))
+        }
+      },
+    })
   }
 
   async function handleClearProgress() {
-    const confirmed = window.confirm('¿Deseas borrar todo el progreso registrado?')
-    if (!confirmed) {
-      return
-    }
-
-    await onClearProgress()
+    showConfirmToast({
+      message: t('progreso.clearConfirm'),
+      actionLabel: t('progreso.clearAll'),
+      cancelLabel: t('progreso.cancel'),
+      onConfirm: async () => {
+        try {
+          await onClearProgress()
+          toast.success(t('progreso.clearSuccess'))
+        } catch {
+          toast.error(t('progreso.actionError'))
+        }
+      },
+    })
   }
 
   return (
@@ -54,7 +80,7 @@ export function ProgresoSection({
           <h2>{t('progreso.title')}</h2>
           <span>{t('common.daily')}</span>
         </div>
-        <form onSubmit={onAddProgress} className="neon-form">
+        <form onSubmit={handleAddProgress} className="neon-form">
           <label>
             {t('progreso.mood')}
             <select
@@ -92,7 +118,7 @@ export function ProgresoSection({
           <span>{progressEntries.length} {t('progreso.logs')}</span>
         </div>
         <button className="fit-btn fit-btn-soft" type="button" onClick={handleClearProgress}>
-          Borrar todo
+          {t('progreso.clearAll')}
         </button>
         <ul className="fit-list">
           {progressEntries.map((entry) => (

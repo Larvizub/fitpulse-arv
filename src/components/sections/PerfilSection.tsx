@@ -2,6 +2,7 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import type { TranslationKey } from '../../i18n/translations'
 import type { TrainingPhase } from '../../types'
+import { toast } from '../../shared/toast'
 
 interface ProfileDraft {
   fullName: string
@@ -29,7 +30,7 @@ export function PerfilSection({
   parseNumber,
   t,
 }: PerfilSectionProps) {
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving'>('idle')
   const [editingRequested, setEditingRequested] = useState(false)
   const isEditing = !hasSavedProfile || editingRequested
 
@@ -37,10 +38,12 @@ export function PerfilSection({
     setSaveStatus('saving')
     try {
       await onSaveProfile(event)
-      setSaveStatus('saved')
+      setSaveStatus('idle')
       setEditingRequested(false)
+      toast.success(t('perfil.saved'))
     } catch {
-      setSaveStatus('error')
+      setSaveStatus('idle')
+      toast.error(t('perfil.saveError'))
     }
   }
 
@@ -84,7 +87,6 @@ export function PerfilSection({
               {t('perfil.edit')}
             </button>
           </div>
-          {saveStatus === 'saved' ? <p className="save-feedback success">{t('perfil.saved')}</p> : null}
         </article>
       </section>
     )
@@ -152,8 +154,6 @@ export function PerfilSection({
               {t('perfil.cancelEdit')}
             </button>
           ) : null}
-          {saveStatus === 'saved' ? <p className="save-feedback success">{t('perfil.saved')}</p> : null}
-          {saveStatus === 'error' ? <p className="save-feedback error-state">{t('perfil.saveError')}</p> : null}
         </form>
       </article>
     </section>
