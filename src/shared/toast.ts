@@ -10,9 +10,7 @@ interface ConfirmToastOptions {
 export function showConfirmToast({ message, actionLabel, cancelLabel, onConfirm }: ConfirmToastOptions) {
   toast(message, {
     duration: 8000,
-    cancel: {
-      label: cancelLabel,
-    },
+    cancel: cancelLabel,
     action: {
       label: actionLabel,
       onClick: () => {
