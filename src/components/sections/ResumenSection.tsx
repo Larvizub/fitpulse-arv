@@ -22,10 +22,39 @@ export function ResumenSection({
   profile,
   t,
 }: ResumenSectionProps) {
+  const formatWorkoutDate = (value: string) => new Date(value).toLocaleDateString()
+
   const estimatedVolume = routineCount * 6200 + measurementCount * 150
   const streakWeeks = Math.max(1, Math.round(completionRate / 18))
   const recordsBroken = Math.max(0, Math.round((completionRate + routineCount) / 25))
   const activityByDay = [...routines.map((routine) => routine.date), ...progressEntries.map((entry) => entry.date)]
+  const recentWorkoutItems = routines.slice(0, 3).map((routine) => {
+    const targetReps = routine.exercises.reduce((acc, exercise) => acc + Number(exercise.targetReps || 0), 0)
+    const completedReps = routine.exercises.reduce((acc, exercise) => acc + Number(exercise.completedReps || 0), 0)
+    const noteSuffix = routine.notes.trim() ? ` • ${routine.notes.trim()}` : ''
+
+    return {
+      id: routine.id,
+      date: routine.date,
+      title: routine.name,
+      detail: `${routine.exercises.length} ejercicios • ${completedReps}/${targetReps} reps • ${formatWorkoutDate(routine.date)}${noteSuffix}`,
+    }
+  })
+
+  const recentProgressItems = progressEntries
+    .filter((entry) => entry.notes.trim())
+    .slice(0, 3)
+    .map((entry) => ({
+      id: entry.id,
+      date: entry.date,
+      title: entry.notes.trim(),
+      detail: `Ánimo: ${entry.mood} • Energía: ${entry.energyLevel}/10 • ${formatWorkoutDate(entry.date)}`,
+    }))
+
+  const recentItems = [...recentWorkoutItems, ...recentProgressItems]
+    .sort((a, b) => (a.date < b.date ? 1 : -1))
+    .slice(0, 3)
+
   const weeklyConsistency = Array.from({ length: 6 }).map((_, index) => {
     const now = new Date()
     const start = new Date(now)
@@ -148,21 +177,21 @@ export function ResumenSection({
         <article className="glass-card">
           <div className="panel-head">
             <h2>Recent Workouts</h2>
-            <span>{t('common.live')}</span>
           </div>
           <ul className="fit-list recent-list">
-            <li>
-              <strong>{profile?.trainingPhase ? `${profile.trainingPhase} Day` : 'Upper Day'} · Chest Focus</strong>
-              <span>8,450 kg • 1h 15m</span>
-            </li>
-            <li>
-              <strong>Morning Cardio</strong>
-              <span>5.2 km • 32m</span>
-            </li>
-            <li>
-              <strong>{profile?.goal || t('resumen.goalFallback')}</strong>
-              <span>{t('resumen.phase')}: {profile?.trainingPhase ?? 'adaptacion'}</span>
-            </li>
+            {recentItems.length ? (
+              recentItems.map((item) => (
+                <li key={item.id}>
+                  <strong>{item.title}</strong>
+                  <span>{item.detail}</span>
+                </li>
+              ))
+            ) : (
+              <li>
+                <strong>{profile?.goal || t('resumen.goalFallback')}</strong>
+                <span>{t('resumen.phase')}: {profile?.trainingPhase ?? 'adaptacion'}</span>
+              </li>
+            )}
           </ul>
         </article>
       </div>
