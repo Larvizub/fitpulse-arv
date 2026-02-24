@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { User } from 'firebase/auth'
 import { firebaseEnabled } from './firebase'
 import { AppHeader } from './components/AppHeader'
+import { AppBottomNav } from './components/AppBottomNav'
 import { AppSidebar } from './components/AppSidebar'
 import { AuthLanding } from './components/AuthLanding'
 import { EjerciciosSection } from './components/sections/EjerciciosSection.tsx'
@@ -195,6 +196,8 @@ function AuthenticatedApp({ currentUser, onLogout, language, t, onChangeLanguage
           />
         ) : null}
       </section>
+
+      <AppBottomNav activeTab={activeTab} t={t} onChangeTab={setActiveTab} />
     </main>
   )
 }
